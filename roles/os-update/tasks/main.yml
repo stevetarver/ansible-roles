@@ -1,0 +1,12 @@
+---
+#
+# Only supporting Ubuntu 16 for now
+#
+- name: is this a supported OS?
+  set_fact:
+    is_supported: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "16"
+  failed_when: not is_supported
+  changed_when: false
+
+- name: "include update tasks for {{ ansible_distribution }}"
+  include: "{{ ansible_distribution.lower() }}.yml"

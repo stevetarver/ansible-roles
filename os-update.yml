@@ -1,0 +1,7 @@
+---
+
+- name: update OS and reboot if necessary
+  hosts: all
+  gather_facts: true
+  roles:
+    - os-update

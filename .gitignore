@@ -1,0 +1,5 @@
+.idea
+/inventory.txt
+/add-ssh-keys.sh
+/*.retry
+/.gitconfig

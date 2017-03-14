@@ -1,0 +1,8 @@
+---
+
+docker_version: 17.03.0
+docker_compose_version: 1.11.2
+# NOTE: there are version incompatabilities here,
+# ensure docker, it's api, and docker-py versions are compatible
+#docker_py_version: 1.10.6
+docker_py_version: 2.1.0

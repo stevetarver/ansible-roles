@@ -1,0 +1,34 @@
+---
+
+- name: setup apt to use a repository over https
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+
+- name: add docker's GPG key
+  apt_key:
+    url: "https://download.docker.com/linux/ubuntu/gpg"
+    state: present
+
+- name: add docker apt repo for Ubuntu
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    mode: '644'
+    state: present
+
+# docker wants these to use aufs
+- name: add Ubuntu 14 packages for aufs
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "linux-image-extra-{{ ansible_kernel }}"
+    - linux-image-extra-virtual
+  when: ansible_distribution_major_version < 16
+

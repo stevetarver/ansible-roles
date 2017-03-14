@@ -1,0 +1,14 @@
+---
+
+- name: install the hello-world container
+  docker_container:
+    name: hello-world
+    image: hello-world
+    state: present
+  register: hello_world_output
+
+- name: fail if docker couldn't install the container properly
+  fail:
+    msg: failed to create hello-world container - something is wrong with docker
+  when: hello_world_output.ansible_facts.ansible_docker_container.State.Status != 'created'
+

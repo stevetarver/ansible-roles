@@ -1,0 +1,8 @@
+---
+
+- include: 0-check-os-type-and-version.yml
+- include: 1-remove-old-docker.yml
+- include: 2-setup-apt-for-docker.yml
+- include: 3-install-docker.yml
+# need to wait on ansible to use pypi's docker instead of docker-py before this is possible
+#- include: 4-verify-install.yml

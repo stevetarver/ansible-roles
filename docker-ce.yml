@@ -1,0 +1,7 @@
+---
+
+- name: apply docker role to server
+  hosts: all
+  gather_facts: True
+  roles:
+    - docker-ce

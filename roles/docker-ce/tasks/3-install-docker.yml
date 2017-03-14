@@ -1,0 +1,68 @@
+---
+
+- name: "install docker-ce: {{ docker_version }}~ce-0~{{ ansible_distribution.lower() }}-{{ ansible_distribution_release }}"
+  apt:
+    name: "docker-ce={{ docker_version }}~ce-0~{{ ansible_distribution.lower() }}-{{ ansible_distribution_release }}"
+    state: present
+
+- name: set docker to start on reboot
+  service:
+    name: docker
+    enabled: yes
+    state: started
+  when: ansible_distribution_major_version >= 16
+
+- name: check if /etc/updatedb.conf exists
+  stat:
+    path: /etc/updatedb.conf
+  register: updatedb_conf_exists
+
+# Security: if updatedb indexes docker, there is the potential that normal users could
+# could view root-only file structure
+- name: ensure updatedb does not index /var/lib/docker
+  lineinfile:
+    dest: /etc/updatedb.conf
+    state: present
+    backrefs: yes
+    regexp: '^PRUNEPATHS="(/var/lib/docker )?(.*)"$'
+    line: 'PRUNEPATHS="/var/lib/docker \2"'
+  when: updatedb_conf_exists.stat.exists
+
+# omitting compose for now - there are some ansible docker-py, etc. version conflicts
+#- name: install docker-compose
+#  get_url:
+#    url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
+#    dest: /usr/local/bin/docker-compose
+#    mode: 0700
+#
+- name: install pip, python-dev supporting ansible's docker integration
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - python-dev
+    - python-pip
+
+- name: upgrade latest pip and setuptools
+  pip:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - pip
+    - setuptools
+
+# NOTE: we need this to verify installation and use ansible to manipulate containers, etc.
+# But the latest version has changed names and is not included in the ansible release yet
+# The new name is simply docker
+#- name: "install docker-py:{{ docker_py_version }} to support ansible docker container mgmt"
+#  pip:
+#    name: docker-py
+#    state: present
+#    version: "{{ docker_py_version }}"
+
+- name: install docker clean slate script
+  copy:
+    src: clean_docker_slate.sh
+    dest: /root/clean_docker_slate.sh
+    mode: 0700

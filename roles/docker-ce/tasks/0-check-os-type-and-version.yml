@@ -1,0 +1,11 @@
+---
+
+- name: fail if OS is not Ubuntu
+  fail:
+    msg: "this role cannot be applied to {{ ansible_distribution }} servers"
+  when: ansible_distribution != "Ubuntu"
+
+- name: fail if Ubuntu version < 14
+  fail:
+    msg: "this role requires Ubuntu 14.04 or later; {{ ansible_distribution_version }} is just too old"
+  when: ansible_distribution_major_version < 14

@@ -1,0 +1,12 @@
+---
+# Starting after v 1.13.1, docker moved to a monthly release cycle with a YY.MM version
+# number; e.g 17.03.0 is Mar 2017.
+# Remove any version of docker prior to this version
+
+- name: remove docker versions prior to 1.13.1
+  apt:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - docker
+    - docker-engine
